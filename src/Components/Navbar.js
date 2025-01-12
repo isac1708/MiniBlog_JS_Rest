@@ -21,5 +21,6 @@ const Navbar = () => {
         </nav>
     );
 };
+// Exporta o componente Navbar.
 
 export default Navbar;
