@@ -1,26 +1,35 @@
 //Cria o componente Navbar que é um menu de navegação para o site. Ele é composto por um título e dois links, um para a página inicial e outro para a página sobre.
 
-import styles from './Navbar.module.css';
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import styles from './Navbar.module.css';
 
 const Navbar = () => {
     return (
-        <nav>
-            <NavLink to="/">
+        <nav className={styles.navbar}>
+            <NavLink to="/" className={styles.brand}>
                 Mini <span>Blog</span>
             </NavLink>
-            <ul>
+            <ul className={styles.links_list}>
                 <li>
-                    <NavLink to="/">Home</NavLink>
+                    <NavLink 
+                        to="/" 
+                        className={({ isActive }) => isActive ? styles.active : undefined} //testa se a rota está ativa e aplica a classe active
+                    >
+                        Home
+                    </NavLink>
                 </li>
                 <li>
-                    <NavLink to="/about">About</NavLink>
+                    <NavLink 
+                        to="/about" 
+                        className={({ isActive }) => isActive ? styles.active : undefined}//testa se a rota está ativa e aplica a classe active
+                    >
+                        About
+                    </NavLink>
                 </li>
             </ul>
         </nav>
     );
 };
-// Exporta o componente Navbar.
 
 export default Navbar;
