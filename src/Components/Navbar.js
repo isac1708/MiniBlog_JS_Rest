@@ -21,10 +21,26 @@ const Navbar = () => {
                 </li>
                 <li>
                     <NavLink 
+                        to="/login" 
+                        className={({ isActive }) => isActive ? styles.active : undefined}//testa se a rota está ativa e aplica a classe active
+                    >
+                        Entrar
+                    </NavLink>
+                </li>
+                <li>
+                    <NavLink 
+                        to="/register" 
+                        className={({ isActive }) => isActive ? styles.active : undefined}//testa se a rota está ativa e aplica a classe active
+                    >
+                        Cadastrar
+                    </NavLink>
+                </li>
+                <li>
+                    <NavLink 
                         to="/about" 
                         className={({ isActive }) => isActive ? styles.active : undefined}//testa se a rota está ativa e aplica a classe active
                     >
-                        About
+                        Sobre
                     </NavLink>
                 </li>
             </ul>
