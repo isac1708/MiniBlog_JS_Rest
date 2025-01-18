@@ -1,7 +1,11 @@
 
 import './App.css';
 import {BrowserRouter,Routes,Route,Navigate} from 'react-router-dom';
+import  {onAuthStateChanged} from 'firebase/auth';//mapeia o estado do usuário
 
+//hooks
+import {useState,useEffect} from 'react';
+import { useAuthentication } from './hooks/useAuthentication';
 //context
 import { AuthProvider } from './context/AuthContext';
 
@@ -16,9 +20,38 @@ import Register from './Register/Register';
 
 
 function App() {
+  const [user,setUser] = useState(undefined);//estado do usuário
+  const {auth}=useAuthentication();//hook para autenticação
+  const loadingUser = user === undefined;//se o usuário for indefinido o loading é verdadeiro
+  useEffect(() => {
+    if (!auth) {
+      console.log('Auth not initialized');
+      return; // Certifique-se de que auth está inicializado
+    }
+
+    console.log('Auth initialized:', auth);
+
+    const unsubscribe = onAuthStateChanged(auth, (user) => { // verifica se o usuário está logado
+      console.log('User state changed:', user);
+      setUser(user); // seta o usuário
+    });
+
+    return () => {
+      unsubscribe(); // limpa o unsubscribe
+    };
+  }, [auth]);
+
+  if (loadingUser) {
+    console.log('Loading user...');
+    return <div>Carregando...</div>;
+  }
+
+  console.log('User loaded:', user);
+
+
   return (
     <div className="App">
-      <AuthProvider>
+      <AuthProvider value = {{user}}>{/*envolve a aplicação com o contexto de autenticação*/}
         <BrowserRouter>
           <Navbar/>
           <Routes>

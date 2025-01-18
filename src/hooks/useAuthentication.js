@@ -58,5 +58,5 @@ function checkIfCancelled() {
             setCancelled(true);
         };
     }, []);
-    return {  createUser, error, loading };
+    return { auth, createUser, error, loading };
 };
