@@ -16,7 +16,8 @@ import Navbar from './Components/Navbar';
 import Footer from './Components/Footer';
 import Login from './Login/Login';
 import Register from './Register/Register';
-
+import CreatePost from './pages/CreatePost/CreatePost'; 
+import Dashboard from './pages/Dashboard/Dashboard';
 
 
 function App() {
@@ -60,6 +61,8 @@ function App() {
             <Route path="/login" element={<Login/>}/>
             <Route path="/register" element={<Register/>}/>
             <Route path="*" element={<Navigate to="/"/>}/>
+            <Route path="/create-post" element={<CreatePost/>}/>
+            <Route path="/dashboard" element={<Dashboard/>}/>
           </Routes>
           <Footer/>
         </BrowserRouter>

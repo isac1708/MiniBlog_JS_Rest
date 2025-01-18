@@ -3,8 +3,11 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import styles from './Navbar.module.css';
+import { useAuthentication } from '../hooks/useAuthentication'; // Corrige o caminho da importação
+import { useAuth } from '../context/AuthContext'; // Corrige o caminho da importação // Corrige o caminho da importação
 
 const Navbar = () => {
+    const {user} = useAuth();
     return (
         <nav className={styles.navbar}>
             <NavLink to="/" className={styles.brand}>
@@ -19,21 +22,47 @@ const Navbar = () => {
                         Home
                     </NavLink>
                 </li>
+                {!user && (
+                    <>
+                        <li>
+                            <NavLink 
+                                to="/login" 
+                                className={({ isActive }) => isActive ? styles.active : undefined} // testa se a rota está ativa e aplica a classe active
+                            >
+                                Entrar
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink 
+                                to="/register" 
+                                className={({ isActive }) => isActive ? styles.active : undefined} // testa se a rota está ativa e aplica a classe active
+                            >
+                                Cadastrar
+                            </NavLink>
+                        </li>
+                    </>
+                )}
+                {user && (
+                    <li>
+                        <NavLink 
+                            to="/dashboard" 
+                            className={({ isActive }) => isActive ? styles.active : undefined} // testa se a rota está ativa e aplica a classe active
+                        >
+                            Dashboard
+                        </NavLink>
+                    </li>
+                )}
+               
                 <li>
                     <NavLink 
-                        to="/login" 
-                        className={({ isActive }) => isActive ? styles.active : undefined}//testa se a rota está ativa e aplica a classe active
+                        to="/create-post" 
+                        className={({ isActive }) => isActive ? styles.active : undefined} // testa se a rota está ativa e aplica a classe active
                     >
-                        Entrar
+                        Criar Post
                     </NavLink>
                 </li>
                 <li>
-                    <NavLink 
-                        to="/register" 
-                        className={({ isActive }) => isActive ? styles.active : undefined}//testa se a rota está ativa e aplica a classe active
-                    >
-                        Cadastrar
-                    </NavLink>
+                    {/* Outros itens de navegação aqui */}
                 </li>
                 <li>
                     <NavLink 
