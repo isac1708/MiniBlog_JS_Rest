@@ -53,10 +53,22 @@ function checkIfCancelled() {
             setError(systemErrorMessage);
         }
     };
+
+    //logout do usuário
+    const logout = async () => {
+        checkIfCancelled();
+        try {
+            await signOut(auth);
+        } catch (error) {
+            setError(error.message);
+        }
+    };
+
+
     useEffect(() => {
         return () => {
             setCancelled(true);
         };
     }, []);
-    return { auth, createUser, error, loading };
+    return { auth, createUser, error, loading,logout };
 };

@@ -8,6 +8,7 @@ import { useAuth } from '../context/AuthContext'; // Corrige o caminho da import
 
 const Navbar = () => {
     const {user} = useAuth();
+    const {logout} = useAuthentication();
     return (
         <nav className={styles.navbar}>
             <NavLink to="/" className={styles.brand}>
@@ -72,6 +73,10 @@ const Navbar = () => {
                         Sobre
                     </NavLink>
                 </li>
+                {user && (
+                    <li>
+                        <button onClick={logout}>Sair</button>
+                    </li>)}
             </ul>
         </nav>
     );
