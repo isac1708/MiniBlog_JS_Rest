@@ -3,12 +3,10 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import styles from './Navbar.module.css';
-import { useAuthentication } from '../hooks/useAuthentication'; // Corrige o caminho da importação
-import { useAuth } from '../context/AuthContext'; // Corrige o caminho da importação // Corrige o caminho da importação
+import { useAuth } from '../context/AuthContext'; // Corrige o caminho da importação
 
-const Navbar = () => {
-    const {user} = useAuth();
-    const {logout} = useAuthentication();
+const Navbar = ({ logout }) => {
+    const { user } = useAuth();
     return (
         <nav className={styles.navbar}>
             <NavLink to="/" className={styles.brand}>
@@ -18,7 +16,7 @@ const Navbar = () => {
                 <li>
                     <NavLink 
                         to="/" 
-                        className={({ isActive }) => isActive ? styles.active : undefined} //testa se a rota está ativa e aplica a classe active
+                        className={({ isActive }) => isActive ? styles.active : undefined} // testa se a rota está ativa e aplica a classe active
                     >
                         Home
                     </NavLink>
@@ -53,7 +51,6 @@ const Navbar = () => {
                         </NavLink>
                     </li>
                 )}
-               
                 <li>
                     <NavLink 
                         to="/create-post" 
@@ -68,7 +65,7 @@ const Navbar = () => {
                 <li>
                     <NavLink 
                         to="/about" 
-                        className={({ isActive }) => isActive ? styles.active : undefined}//testa se a rota está ativa e aplica a classe active
+                        className={({ isActive }) => isActive ? styles.active : undefined} // testa se a rota está ativa e aplica a classe active
                     >
                         Sobre
                     </NavLink>
@@ -76,7 +73,8 @@ const Navbar = () => {
                 {user && (
                     <li>
                         <button onClick={logout}>Sair</button>
-                    </li>)}
+                    </li>
+                )}
             </ul>
         </nav>
     );

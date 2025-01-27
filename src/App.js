@@ -1,4 +1,3 @@
-
 import './App.css';
 import {BrowserRouter,Routes,Route,Navigate} from 'react-router-dom';
 import  {onAuthStateChanged} from 'firebase/auth';//mapeia o estado do usuário
@@ -42,6 +41,14 @@ function App() {
     };
   }, [auth]);
 
+  const logout = () => {
+    auth.signOut().then(() => {
+      setUser(null);
+    }).catch((error) => {
+      console.error('Error during logout:', error);
+    });
+  };
+
   if (loadingUser) {
     console.log('Loading user...');
     return <div>Carregando...</div>;
@@ -54,7 +61,7 @@ function App() {
     <div className="App">
       <AuthProvider value = {{user}}>{/*envolve a aplicação com o contexto de autenticação*/}
         <BrowserRouter>
-          <Navbar/>
+          <Navbar user={user} logout={logout} />
           <Routes>
             <Route path="/" element={<Home/>}/>
             <Route path="/about" element={<About/>}/>
