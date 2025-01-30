@@ -1,6 +1,4 @@
 import { auth } from '../firebase/config';
-
-// ...existing code...
 import {
     getAuth,
     createUserWithEmailAndPassword,
@@ -8,67 +6,101 @@ import {
     updateProfile,
     signOut,
 } from 'firebase/auth';
-
-import { useState, useEffect } from 'react';
-import { data } from 'react-router-dom';
-
+import { useState, useEffect, useRef } from 'react'; // Importa useRef que será usado para verificar o status de montagem do componente
+// useRef é um hook que retorna um objeto mutável com a propriedade .current. Ele é útil para manter valores que precisam ser acessados entre renderizações, como o status de montagem do componente.
 
 export const useAuthentication = () => {
     const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(true);
-    
-//cleanup para evitar memory leak
+    const [loading, setLoading] = useState(false);
 
-const [cancelled, setCancelled] = useState(false);
+    const auth = getAuth();
 
-const auth = getAuth();
+    // Usa useRef para rastrear o status de montagem do componente
+    const isMounted = useRef(true);
 
-function checkIfCancelled() {
-    if (cancelled) {
-        throw new Error('cancelled');
-    }
-}
-
-    const createUser = async(data) => {
-        setLoading(true);//inicia o loading
+    const createUser = async (data) => {
+        setLoading(true);
         setError(null);
         try {
-            
-            const { user } = await createUserWithEmailAndPassword(auth, data.email, data.password)
-            await updateProfile(user, { displayName: data.displayName })
-            return user;
-        } catch (error) {
-            setError(error.message);
-            setLoading(false);
-            let systemErrorMessage
-            if(error.message.includes("Password")){
-                systemErrorMessage = "A senha deve ter no mínimo 6 caracteres"
-            }else if(error.message.includes("email")){
-                systemErrorMessage = "Email inválido"
-            }else if(error.message.includes("already")){
-                systemErrorMessage = "Email já cadastrado"
-            }else{
-                systemErrorMessage = "Erro ao criar usuário aguarde uns instantes e tente novamente"
+            const { user } = await createUserWithEmailAndPassword(auth, data.email, data.password);
+            await updateProfile(user, { displayName: data.displayName });
+            if (isMounted.current) { // Verifica se o componente ainda está montado
+                return user;
             }
-            setError(systemErrorMessage);
+        } catch (error) {
+            if (isMounted.current) { // Verifica antes de definir o erro
+                setError(getErrorMessage(error.message)); // Usa função auxiliar
+                setLoading(false);
+            }
+        } finally {
+            if (isMounted.current) {
+                setLoading(false); // Garante que o loading seja definido como false mesmo em caso de erro
+            }
         }
     };
 
-    //logout do usuário
     const logout = async () => {
-        checkIfCancelled();
         try {
             await signOut(auth);
         } catch (error) {
-            setError(error.message);
+            if (isMounted.current) {
+                setError(error.message);
+            }
+        }
+    };
+    const getLoginErrorMessage = (errorMessage) => {
+        if (errorMessage.includes("wrong-password")) {
+            return "Senha incorreta";
+        } else if (errorMessage.includes("user-not-found")) {
+            return "Usuário não encontrado";
+        } else if (errorMessage.includes("invalid-email")) {
+            return "Email inválido";
+        } else {
+            return "Erro ao logar, tente novamente mais tarde";
+        }
+    };
+    const loginUser = async (data) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const { user } = await signInWithEmailAndPassword(auth, data.email, data.password);
+            if (isMounted.current) { // Verifica se o componente ainda está montado
+                return user;
+            }
+        } catch (error) {
+            if (isMounted.current) {
+                setError(getLoginErrorMessage(error.message)); // Usa função auxiliar específica para login
+                setLoading(false);
+            }
+        } finally {
+            if (isMounted.current) {
+                setLoading(false); // Garante que o loading seja definido como false mesmo em caso de erro
+            }
         }
     };
 
+    // Função auxiliar para centralizar a lógica de mensagens de erro
+    const getErrorMessage = (errorMessage) => {
+        if (errorMessage.includes("Password")) {
+            return "A senha deve ter no mínimo 6 caracteres";
+        } else if (errorMessage.includes("email")) {
+            return "Email inválido";
+        } else if (errorMessage.includes("already")) {
+            return "Email já cadastrado";
+        } else {
+            return "Erro ao criar/logar usuário, aguarde uns instantes e tente novamente";
+        }
+    };
 
     useEffect(() => {
+        isMounted.current = true; // Define como true quando o componente monta
+
         return () => {
-            setCancelled(true);
+            isMounted.current = false; // Define como false quando o componente desmonta
         };
     }, []);
-    return { auth, createUser, error, loading,logout };
+
+    return { auth, createUser, error, loading, logout, loginUser };
 };
+
+export default useAuthentication;
